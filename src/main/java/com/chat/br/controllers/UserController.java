@@ -7,22 +7,34 @@ import com.chat.br.dtos.UserDto;
 import com.chat.br.models.EmailModel;
 import com.chat.br.models.UserModel;
 import com.chat.br.services.UserService;
+
 import jakarta.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin
 @RestController
-@RequestMapping("/user/")
+@RequestMapping("/auth/")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+   @Autowired
+   private UserService userService;
+
+    //https://programadev.com.br/spring-security-jwt/
+    @PostMapping("/login")
+    public ResponseEntity<String>  userDataTeste(@RequestBody @Valid LoginDto loginDto){
+
+        var token = userService.userLogin(loginDto.getEmail(), loginDto.getPassword());
+
+        return ResponseEntity.ok(token);
+
+    }
 
     //@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/data")
@@ -34,15 +46,6 @@ public class UserController {
     @GetMapping("/all-users")
     public ResponseEntity<List<UserModel>> listAllUsers(){
         return new ResponseEntity<>(userService.listAllUsers(), HttpStatus.OK);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<String> userDataTeste(@RequestBody @Valid LoginDto loginDto){
-
-        System.out.println(loginDto.getEmail());
-        System.out.println(loginDto.getPassword());
-
-        return new ResponseEntity<>("Logged", HttpStatus.OK);
     }
 
     @PostMapping("/register")
@@ -61,14 +64,10 @@ public class UserController {
 
     //@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PutMapping("/update")
-    public ResponseEntity<String> userUpdate(@RequestBody @Valid UserDto userDto){
+    public ResponseEntity<String> userUpdate(@RequestBody UserDto userDto){
 
-        Boolean isRegistration = userService.userUpdate(userDto);
+        return userService.userUpdate(userDto);
 
-        if(isRegistration)
-            return new ResponseEntity<>("Successfully updated", HttpStatus.OK);
-        else
-            return new ResponseEntity<>("Error updating", HttpStatus.BAD_REQUEST);
     }
 
     //@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")

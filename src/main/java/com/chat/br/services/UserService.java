@@ -2,21 +2,26 @@ package com.chat.br.services;
 
 import com.chat.br.dtos.ChangeForgottenPasswordDto;
 import com.chat.br.dtos.UserDto;
-import com.chat.br.enums.RoleEnum;
 import com.chat.br.enums.StatusMessage;
 import com.chat.br.models.EmailModel;
-import com.chat.br.models.RoleModel;
 import com.chat.br.models.UserModel;
 import com.chat.br.repository.EmailRepository;
-import com.chat.br.repository.RoleRepository;
 import com.chat.br.repository.UserRepository;
+import com.chat.br.security.UserDetailsServiceImplement;
+import jakarta.validation.constraints.Email;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,18 +37,17 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
     EmailRepository emailRepository;
     @Autowired
     private JavaMailSender emailSender;
+    @Autowired
+    private UserDetailsServiceImplement userDetailsServiceImplement;
+    @Autowired
+    private TokenService tokenService;
 
     public UserModel useData(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        var user = userRepository.findByEmail(auth.getName()).get();
-        user.setPassword("");
-        return user;
+        return userRepository.findByEmail(auth.getName()).get();
     }
 
     public List<UserModel> listAllUsers(){
@@ -57,12 +61,30 @@ public class UserService {
 
     }
 
+    AuthenticationManager myAuthenticationManager(UserDetailsService userDetailsService) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(new BCryptPasswordEncoder());
+        return provider::authenticate;
+    }
+
+    public String userLogin(String email, String password){
+
+        var authenticationManager = myAuthenticationManager(userDetailsServiceImplement);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+        Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+        String token = tokenService.generateToken(authentication);
+
+        return token;
+
+    }
+
     @Transactional
     public Boolean userRegister(UserModel userModel){
        try {
 
-           List<RoleModel> roleList = new ArrayList<>();
-           roleList.add(roleRepository.findByRoleName(RoleEnum.ROLE_USER));
+           List<String> roleList = new ArrayList<>();
+           roleList.add("ROLE_ADMIN");
            userModel.setRoles(roleList);
 
            userModel.setPassword(new BCryptPasswordEncoder().encode(userModel.getPassword()));
@@ -76,23 +98,31 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean userUpdate(UserDto userDto){
+    public ResponseEntity<String> userUpdate(UserDto userDto){
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
             var userOld = userRepository.findByEmail(auth.getName()).get();
-            BeanUtils.copyProperties(userDto, userOld);
 
-            userOld.setEmail(auth.getName());
-            userOld.setPassword(new BCryptPasswordEncoder().encode(userOld.getPassword()));
+            if(userDto.getEmail() != null && !userDto.getEmail().isEmpty()) {
+                if (userRepository.findByEmail(userDto.getEmail()).isPresent() && !userDto.getEmail().equals(auth.getName())) {
+                    return new ResponseEntity<>("This email is unavailable", HttpStatus.BAD_REQUEST);
+                }else{
+                    userOld.setEmail(userDto.getEmail());
+                }
+            }
+            if(userDto.getName() != null &&!userDto.getName().isEmpty())
+                userOld.setName(userDto.getName());
+            if(userDto.getPassword() != null && !userDto.getPassword().isEmpty())
+                userOld.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword()));
+
             userRepository.save(userOld);
 
-            return true;
+            return new ResponseEntity<>("Successfully updated", HttpStatus.OK);
 
         }catch(Exception e){
             System.out.println(e);
-            return false;
+            return new ResponseEntity<>("Error updating", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

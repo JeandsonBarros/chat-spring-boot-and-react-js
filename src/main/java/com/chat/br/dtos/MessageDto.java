@@ -2,9 +2,7 @@ package com.chat.br.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 
-@Data
 public class MessageDto {
     @NotBlank
     private String text;
@@ -12,4 +10,19 @@ public class MessageDto {
     @Email
     private String emailRecipient;
 
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getEmailRecipient() {
+        return emailRecipient;
+    }
+
+    public void setEmailRecipient(String emailRecipient) {
+        this.emailRecipient = emailRecipient;
+    }
 }
