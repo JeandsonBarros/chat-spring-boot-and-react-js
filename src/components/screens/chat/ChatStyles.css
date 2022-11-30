@@ -1,0 +1,51 @@
+.chats {
+    display: flex;
+    flex-direction: row;
+
+}
+
+.chatList {
+    list-style-type: none;
+    width: 300px;
+    background-color: rgba(0, 0, 0, 0.144);
+    padding: 10px;
+    margin: 0;
+    height: 80vh;
+    overflow-y: auto;
+}
+
+@media only screen and (max-width: 600px) {
+    .chatList {
+        display: none;
+    }
+}
+
+.lineUser {
+    margin-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.418);
+    padding-top: 10px;
+}
+
+.chat {
+    width: 100vw;
+    height: 80vh;
+}
+
+.conversationUser {
+    height: 10vh;
+}
+
+.messages {
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-y: auto;
+    height: 60vh;
+}
+
+.sendMessage {
+    padding: 3px 10px 3px 10px;
+    height: 9vh;
+    display: flex;
+    align-items: center;
+
+}
