@@ -88,7 +88,6 @@ function Account({ visible, setVisible }) {
 
                 <hr />
 
-
                 <ModalConfirm
                     setVisible={setConfirmVisible}
                     visible={confirmVisible}
@@ -116,8 +115,6 @@ function Account({ visible, setVisible }) {
                 >
                     Remove account
                 </Button>
-
-               
 
             </Modal.Footer>
 

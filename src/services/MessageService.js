@@ -1,9 +1,9 @@
 import { getToken } from "./TokenService";
 import api from './api'
 
-export async function getMessages() {
+export async function getChats(page=0) {
     try {
-        const response = await api.get(`/chat/`,
+        const response = await api.get(`/chat/?page=${page}`,
             {
                 headers: {
                     'Authorization': getToken(),
@@ -17,9 +17,9 @@ export async function getMessages() {
     }
 }
 
-export async function getMessagesUser(userEmail){
+export async function getMessagesUser(userEmail, page=0){
     try {
-        const response = await api.get(`/chat/user/${userEmail}`,
+        const response = await api.get(`/chat/user/${userEmail}?page=${page}`,
             {
                 headers: {
                     'Authorization': getToken(),

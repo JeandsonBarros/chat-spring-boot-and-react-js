@@ -1,23 +1,21 @@
 .chats {
     display: flex;
     flex-direction: row;
-
 }
 
-.chatList {
-    list-style-type: none;
+.navLeft {
     width: 300px;
     background-color: rgba(0, 0, 0, 0.144);
     padding: 10px;
     margin: 0;
     height: 80vh;
-    overflow-y: auto;
 }
 
-@media only screen and (max-width: 600px) {
-    .chatList {
-        display: none;
-    }
+.chatList{
+    list-style-type: none;
+    margin: 0;
+    height: 70vh;
+    overflow-y: auto;
 }
 
 .lineUser {
@@ -31,7 +29,17 @@
     height: 80vh;
 }
 
+.noChat{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100vw;
+}
+
 .conversationUser {
+    display: flex;
+    align-items: center;
     height: 10vh;
 }
 
@@ -48,4 +56,17 @@
     display: flex;
     align-items: center;
 
+}
+
+.buttonShowChatList{
+    display: none;
+}
+
+@media only screen and (max-width: 600px) {
+    .navLeft {
+        display: none;
+    }
+    .buttonShowChatList{
+        display: flex;
+    }
 }
