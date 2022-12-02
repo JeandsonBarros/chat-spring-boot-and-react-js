@@ -22,7 +22,7 @@ public class ChatController {
     private ChatService chatService;
 
     @GetMapping
-    public ResponseEntity<Object> getChats(@PageableDefault(page = 0, size = 30, sort = "messages.sendDateMessage") Pageable paging){
+    public ResponseEntity<Object> getChats(@PageableDefault(page = 0, size = 1, sort = "messages.sendDateMessage") Pageable paging){
         return chatService.getChats(paging);
     }
 
