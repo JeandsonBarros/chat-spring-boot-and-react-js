@@ -4,6 +4,7 @@ import com.chat.br.repository.UserRepository;
 import com.chat.br.services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.http.HttpMethod;
@@ -24,6 +25,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+//@ComponentScan("com.chat.br.security")
 public class WebSecurityConfig{
 
     @Autowired
@@ -43,7 +45,7 @@ public class WebSecurityConfig{
                 .requestMatchers(HttpMethod.GET, "/auth/data").hasAnyRole("ADMIN", "USER")
                 .requestMatchers(HttpMethod.PUT, "/auth/update").hasAnyRole("ADMIN", "USER")
                 .requestMatchers(HttpMethod.DELETE, "/auth/delete").hasAnyRole("ADMIN", "USER")
-                .requestMatchers(HttpMethod.GET, "/auth/all-users").hasAnyRole("ADMIN", "USER")
+                .requestMatchers(HttpMethod.GET, "/auth/all-users").hasAnyRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/auth/admin/delete/{email}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/chat/**").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated()
@@ -63,8 +65,12 @@ public class WebSecurityConfig{
      public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(
                 "/v3/api-docs/**",
-                "/swagger.json",
-                "/swagger-ui.html"
+                "/swagger.json/**",
+                "/swagger-ui/**",
+                "/api/**"
+                ,"/ws-message/**"
+                //,"/topic/message/**"
+                //,"/sendMessage/**"
         );
     }
 

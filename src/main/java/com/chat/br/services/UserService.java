@@ -166,7 +166,11 @@ public class UserService {
     }
 
     @Transactional
-    public String sendEmail(EmailModel emailModel) {
+    public ResponseEntity<String> sendEmail(EmailModel emailModel) {
+
+        if(!userRepository.findByEmail(emailModel.getEmailTo()).isPresent())
+            return new ResponseEntity<>("There is no account registered with this email", HttpStatus.NOT_FOUND);
+
         emailModel.setSendDateEmail(LocalDateTime.now());
 
         try{
@@ -190,9 +194,15 @@ public class UserService {
             emailModel.setStatusMessage(StatusMessage.SENT);
 
         } catch (MailException e){
+            System.out.println(e);
             emailModel.setStatusMessage(StatusMessage.ERROR);
         } finally {
-            return emailRepository.save(emailModel).getStatusMessage().toString();
+            var status = emailRepository.save(emailModel).getStatusMessage().toString();
+
+            if(status.equals("SENT"))
+                return new ResponseEntity<>("Email successfully sent", HttpStatus.CREATED);
+            else
+                return new ResponseEntity<>("Error sending email", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

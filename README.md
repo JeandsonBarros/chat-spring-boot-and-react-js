@@ -5,6 +5,7 @@
 
 # Spring Boot Chat API
 Chat for sending messages with registered people.
+<img src="https://media.giphy.com/media/BTZ1kLY5At7SZNjq5f/giphy.gif" />
 
 ## Getting Started
 
@@ -13,6 +14,10 @@ Chat for sending messages with registered people.
 To run the project, it is necessary to have Java 17, and a database running, preferably MySQL. It is also necessary to pass the settings of the application.properties file, these settings are information for connecting to the database, and for sending emails.
 
 <img src="./print.png" />
+
+### Documentation with swagger
+
+http://localhost:8080/swagger-ui/index.html
 
 ### Reference Documentation
 For further reference, please consider the following sections:

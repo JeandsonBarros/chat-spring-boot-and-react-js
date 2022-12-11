@@ -33,7 +33,7 @@ public class ChatService {
     @Autowired
     private ChatRepository chatRepository;
 
-    public ResponseEntity<String> sendingMessage(MessageDto messageDto){
+    public ResponseEntity<Object> sendingMessage(MessageDto messageDto){
 
         try{
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -76,7 +76,7 @@ public class ChatService {
             }
 
             chatRepository.save(chat);
-            return new ResponseEntity<>("Message sent", HttpStatus.CREATED);
+            return new ResponseEntity<>(newMessage, HttpStatus.CREATED);
 
         }catch (Exception e){
             System.out.println(e);
@@ -85,7 +85,7 @@ public class ChatService {
 
     }
 
-    public ResponseEntity<Object> getSentMessages(@PageableDefault(page = 0, size = 10, sort = "sendDateMessage") Pageable paging){
+    public ResponseEntity<Object> getSentMessages(Pageable paging){
 
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -95,12 +95,13 @@ public class ChatService {
             return new ResponseEntity<>(messages, HttpStatus.OK);
 
         }catch (Exception e){
+        	System.out.println(e);
             return new ResponseEntity<>("Error fetching messages", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
-    public ResponseEntity<Object> getIncomingMessages(@PageableDefault(page = 0, size = 10, sort = "sendDateMessage") Pageable paging){
+    public ResponseEntity<Object> getIncomingMessages(Pageable paging){
 
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
