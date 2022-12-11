@@ -10,7 +10,11 @@ function Container({ children }) {
 
     useEffect(() => {
         
-        if (location.pathname !== '/login' && location.pathname !== '/register' && !getToken())
+        if (
+            location.pathname !== '/login' &&
+            location.pathname !== '/forgot-password' &&
+            location.pathname !== '/register' && 
+            !getToken())
                 return navigate("/login")
         
     }, [location.pathname])

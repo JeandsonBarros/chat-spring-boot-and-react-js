@@ -79,7 +79,7 @@ function Login() {
                             onChange={event => setPassword(event.target.value)}
                             contentLeft={<BsLockFill />}
                         />
-                        <Link>Forgot password?</Link>
+                        <Link to="/forgot-password">Forgot password?</Link>
                     </div>
                     
                     <Button shadow type='submit'>Login</Button>

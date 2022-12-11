@@ -24,7 +24,11 @@ function Header({ setIsDark, isDark }) {
 
     const navBar = () => {
 
-        if (location.pathname === '/login' || location.pathname === '/register') {
+        if (
+            location.pathname === '/login'
+            || location.pathname === '/register'
+            || location.pathname === '/forgot-password'
+        ) {
             return <div></div>
         }
 
@@ -33,7 +37,7 @@ function Header({ setIsDark, isDark }) {
 
                 <Dropdown.Button light>
                     <User
-                        src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                        src={require('../../imgs/user.webp')}
                         bordered
                     />
                 </Dropdown.Button>

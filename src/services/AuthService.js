@@ -88,3 +88,38 @@ export async function deleteUser() {
         return error.status
     }
 }
+
+export async function sendingEmailFogotPassword(emailTo) {
+    try {
+
+        const response = await api.post("/auth/forgot-password/sending-email-code", { emailTo })
+
+        return { message: response.data, sent: true }
+
+    } catch (error) {
+
+        if (error.response) {
+            return { message: error.response.data, sent: false }
+        }
+
+        return { message: "Erro!", sent: false }
+
+    }
+}
+
+export async function changingForgottenPassword(changeForgottenPassword) {
+    try {
+
+        const response = await api.post("/auth/forgot-password/change-password", changeForgottenPassword)
+
+        return response.data
+
+    } catch (error) {
+
+        if (error.response) {
+            return error.response.data
+        }
+
+        return "Erro!"
+    }
+}

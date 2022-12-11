@@ -14,9 +14,12 @@ function Footer() {
                 <a target='_blank' href='https://www.instagram.com/jeandsonbarros/' rel="noreferrer">
                     <BsInstagram />
                 </a>
+
+                <span>Created by Jeandson Barros. &copy; 2022</span>
+                
             </div>
 
-            <span>Created by Jeandson Barros. &copy; 2022</span>
+            
             
         </footer>
     );

@@ -3,7 +3,7 @@ import api from './api'
 
 export async function getChats(page=0) {
     try {
-        const response = await api.get(`/chat/?page=${page}`,
+        const response = await api.get(`/chat/?size=30&page=${page}`,
             {
                 headers: {
                     'Authorization': getToken(),

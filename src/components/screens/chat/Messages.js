@@ -1,157 +1,24 @@
 import './ChatStyles.css';
 
-import { Button, Card, Input, Modal, Row, Text, User } from '@nextui-org/react';
-import { useEffect, useRef, useState } from 'react';
+import { Button, Input, Modal, Text, User } from '@nextui-org/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BiSend } from 'react-icons/bi';
-import SendMessage from './SendMessage';
+import { BsListStars } from 'react-icons/bs';
+import SockJsClient from 'react-stomp';
+
 import { getUserData } from '../../../services/AuthService';
 import { getChats, getMessagesUser, postMessage } from '../../../services/MessageService';
-import { BsListStars, BsPlusCircle } from 'react-icons/bs';
+import ListChats from './ListChats';
+import ListMessagesByUser from './ListMessagesByUser';
+import SendMessage from './SendMessage';
+import { getToken } from '../../../services/TokenService';
 
-function ListMessagesByUser({ messagesFromChat, authUser, getChatByUser, conversationUser }) {
-
-    const [page, setPage] = useState(0)
-
-    function pagitation() {
-        getChatByUser(conversationUser, page + 1)
-        setPage(page + 1)
-    }
-
-    function pagitationButton() {
-        if (messagesFromChat.content.length < messagesFromChat.totalElements) {
-            return (
-                <Row justify='center' align='center' css={{ mt: 10 }}>
-                    <Button
-                        flat
-                        title="Show more"
-                        auto
-                        onPress={pagitation}
-                    >
-                        <BsPlusCircle style={{ fontSize: 25 }} />
-                    </Button>
-                </Row>
-            )
-        }
-
-        return <div></div>
-    }
-
-    return (
-        <>
-
-            <div>
-                {messagesFromChat.content.map((message, index) => {
-
-                    const isAuthUser = message.sender.email === authUser.email
-
-                    return (
-                        <Row
-                            key={index}
-                            justify={isAuthUser ? 'flex-end' : 'flex-start'}
-                        >
-
-                            <Card
-                                css={{
-                                    br: isAuthUser ? "15px 15px 4px 15px" : "15px 15px 15px 4px",
-                                    w: 'auto',
-                                    mw: "330px",
-                                    m: 5,
-                                    backgroundColor: isAuthUser ? '$colors$primary' : '$colors$secondary',
-                                }}
-                            >
-                                <Card.Body css={{ pt: 6, pb: 6, }}>
-
-                                    <Text>
-                                        {message.text}
-                                    </Text>
-
-                                    <Text
-                                        size={12}
-                                        css={{
-                                            textAlign: isAuthUser ? 'right' : 'start',
-                                            color: 'rgba(255,255,255, 0.6)'
-                                        }}>
-                                        {(() => {
-                                            const date = new Date(message.sendDateMessage)
-                                            const minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()
-                                            const hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours()
-                                            return hours + ":" + minutes
-                                        })()}
-                                    </Text>
-
-                                </Card.Body>
-                            </Card>
-
-                        </Row>
-                    )
-                })}
-            </div>
-
-            {pagitationButton()}
-        </>
-    )
-}
-
-function ListChats({ authUser, getChatByUser, chats, listChats }) {
-
-    const [page, setPage] = useState(0)
-
-    function pagitation() {
-        listChats(page + 1)
-        setPage(page + 1)
-    }
-
-    function pagitationButton() {
-        if (chats.content.length < chats.totalElements) {
-            return (
-                <Row justify='center' align='center' css={{ mt: 10 }}>
-                    <Button
-                        flat
-                        title="Show more"
-                        auto
-                        onPress={pagitation}
-                    >
-                        <BsPlusCircle style={{ fontSize: 25 }} />
-                    </Button>
-                </Row>
-            )
-        }
-
-        return <div></div>
-    }
-
-
-    return (
-        <ul className='chatList'>
-
-            {chats.content.map(chat => {
-
-                const chatUser = chat.user1.email === authUser.email ? chat.user2 : chat.user1
-                let name = chatUser.name
-                if (name.length > 15)
-                    name = name.slice(0, 15) + "..."
-
-                return (
-                    <li key={chat.chatId} className='lineUser'>
-                        <User
-                            bordered
-                            as="button"
-                            size="lg"
-                            color="primary"
-                            name={name}
-                            description={chat.messages[chat.messages.length - 1].text}
-                            src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
-                            onClick={() => getChatByUser(chatUser, 0)}
-                        />
-                    </li>
-                )
-            })}
-
-            <li>
-                {pagitationButton()}
-            </li>
-
-        </ul>)
+const headers = {
+    'Authorization': getToken(),
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Request-Method': '*'
 }
 
 export default function Messages() {
@@ -165,24 +32,17 @@ export default function Messages() {
     const [chats, setChats] = useState();
     const [conversationUser, setConversationUser] = useState();
 
-    const [intervalChats, setIntervalChats] = useState()
-    const [intervalMessages, setIntervalMessages] = useState()
-    
-
     const messagesEndRef = useRef(null)
 
     const [visivleChats, setVisivleChats] = useState(false)
-
 
     useEffect(() => {
         listChats(0)
     }, [])
 
-    async function listChats(page=0) {
+    async function listChats(page) {
 
-        if(intervalChats)
-            clearInterval(intervalChats)
-
+       
         const authData = await getUserData()
         setAuthUser(authData)
 
@@ -193,21 +53,9 @@ export default function Messages() {
 
         setChats(data)
 
-        const insterval = setInterval(async () => {
-
-            let data = await getChats(page)
-
-            if (page > 0)
-                data.content = data.content.concat(chats.content)
-
-            setChats(data)
-        }, 1000);
-
-        setIntervalChats(insterval)
-
     }
 
-    async function sendMessage() {
+    async function sendOneMessage() {
 
         await postMessage(recipientEmail, message)
         listChats(0)
@@ -224,9 +72,6 @@ export default function Messages() {
 
         setVisivleChats(false)
 
-        if (intervalMessages)
-            clearInterval(intervalMessages)
-
         setConversationUser(user)
         setRecipientEmail(user.email)
 
@@ -240,22 +85,6 @@ export default function Messages() {
         })
 
         setMessagesFromChat(data)
-
-        const interval = setInterval(async () => {
-
-            let data = await getMessagesUser(user.email, page)
-
-            if (page > 0)
-                data.content = data.content.concat(messagesFromChat.content)
-
-            data.content.sort((date1, date2) => {
-                return new Date(date1.sendDateMessage) - new Date(date2.sendDateMessage)
-            })
-
-            setMessagesFromChat(data)
-        }, 1000)
-
-        setIntervalMessages(interval)
 
     }
 
@@ -273,7 +102,7 @@ export default function Messages() {
                                 color="primary"
                                 name={conversationUser.name}
                                 description={conversationUser.email}
-                                src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
+                                src={require('../../../imgs/user.webp')}
                                 css={{ m: 5 }}
 
                             />
@@ -304,7 +133,7 @@ export default function Messages() {
                                     light
                                     rounded
                                     auto
-                                    onPress={sendMessage}
+                                    onPress={sendOneMessage}
                                     title="Send Message"
                                     disabled={message.length === 0}
                                 >
@@ -333,7 +162,10 @@ export default function Messages() {
                 <Button
                     css={{ w: '100vw', borderRadius: 0 }}
                     shadow
-                    onPress={() => setVisivleChats(true)}
+                    onPress={() => {
+                        listChats(0)
+                        setVisivleChats(true)
+                    }}
                 >
                     <BsListStars style={{ marginRight: 5, fontSize: 22 }} /> Show chats
                 </Button>
@@ -366,6 +198,39 @@ export default function Messages() {
 
             <section className='chats'>
 
+                <SockJsClient
+                    url='http://localhost:8080/ws-message'
+                    headers={headers}
+                    topics={[`/topic/message/${authUser.email}`]}
+                    onConnect={() => console.log("conectado")}
+                    onDisconnect={console.log("Disconnected!")}
+                    onMessage={msg => {
+
+                        if (chats) {
+                            let tempListChats = { ...chats };
+                            const index = tempListChats.content.findIndex(chat => {
+                                const chatUser = chat.user1.email === authUser.email ? chat.user2 : chat.user1
+                                return chatUser.email === msg.body.sender.email
+                            })
+
+                            tempListChats.content[index].messages.push(msg.body)
+
+                            setChats(tempListChats)
+                        }
+
+                        //-------------------------------------------
+
+                        if (conversationUser)
+                            if (msg.body.sender.email === conversationUser.email) {
+                                let tempMessagesFromChat = { ...messagesFromChat }
+                                tempMessagesFromChat.content.push(msg.body)
+                                setMessagesFromChat(tempMessagesFromChat)
+                            }
+
+                    }}
+                    debug={true}
+                />
+
                 <div className='navLeft'>
 
                     <SendMessage />
@@ -381,8 +246,9 @@ export default function Messages() {
 
                 {asViewMessages()}
 
+
+
             </section>
         </>
     );
 }
-

@@ -8,6 +8,8 @@ import Footer from './components/layouts/Footer';
 import Container from './components/screens/Container';
 import Messages from './components/screens/chat/Messages';
 import Register from './components/screens/auth/Register';
+import ForgotPassword from './components/screens/auth/ForgotPassword';
+import Websocket from './components/screens/chat/Websocket';
 
 const lightTheme = createTheme({
   type: 'light',
@@ -29,7 +31,7 @@ const lightTheme = createTheme({
 
       background: '#fff',
 
-      gradient: 'linear-gradient(112deg, $blue100 -25%, $pink500 -10%, $purple500 80%)',
+      gradient: 'linear-gradient( 68.4deg,  rgba(99,251,215,1) -0.4%, rgba(5,222,250,1) 100.2% );',
       link: '#000',
 
       // you can also create your own color
@@ -63,7 +65,8 @@ const darkTheme = createTheme({
 
       background: '#012E40',
 
-      gradient: 'linear-gradient(112deg, $blue100 -25%, $pink500 -10%, $purple500 80%)',
+      
+      gradient: 'radial-gradient( circle farthest-corner at 10% 20%,  rgba(0,152,155,1) 0.1%, rgba(0,94,120,1) 94.2% );',
       link: '#fff',
 
       // you can also create your own color
@@ -108,6 +111,8 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/" element={<Messages />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/websocket" element={<Websocket />} />
 
           </Routes>
 

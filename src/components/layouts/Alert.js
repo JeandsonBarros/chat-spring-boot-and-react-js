@@ -9,7 +9,7 @@ function Alert({visible, setVisible, text}) {
 
                         <Text size={18} >{text}</Text>
 
-                        <Button
+                        {setVisible && <Button
                             color='error'
                             shadow
                             flat
@@ -17,7 +17,7 @@ function Alert({visible, setVisible, text}) {
                             onPress={() => setVisible(false)}
                         >
                             X
-                        </Button>
+                        </Button>}
                     </Row>
                 </Card.Body>
             </Card>}
