@@ -2,12 +2,13 @@ import './ChatStyles.css';
 
 import { Button, Row, User } from '@nextui-org/react';
 import { BsPlusCircle } from 'react-icons/bs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getMessagesUser } from '../../../services/MessageService';
 
 function ListChats({ authUser, getChatByUser, chats, listChats }) {
 
     const [page, setPage] = useState(0)
-
+    
     function pagitation() {
         listChats(page + 1)
         setPage(page + 1)
@@ -42,10 +43,6 @@ function ListChats({ authUser, getChatByUser, chats, listChats }) {
                 if (name.length > 15)
                     name = name.slice(0, 15) + "..."
 
-                chat.messages.sort((date1, date2) => {
-                    return new Date(date1.sendDateMessage) - new Date(date2.sendDateMessage)
-                })
-
                 return (
                     <li key={chat.chatId} className='lineUser'>
                         <User
@@ -54,7 +51,7 @@ function ListChats({ authUser, getChatByUser, chats, listChats }) {
                             size="lg"
                             color="primary"
                             name={name}
-                            description={chat.messages[chat.messages.length - 1].text}
+                            description={chat.lastMessage}
                             src={require('../../../imgs/user.webp')}
                             onClick={() => getChatByUser(chatUser, 0)}
                         />

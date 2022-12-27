@@ -1,7 +1,7 @@
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { getToken } from '../../services/TokenService';
+import { getToken, removeToken } from '../../services/TokenService';
 
 function Container({ children }) {
 
@@ -9,7 +9,7 @@ function Container({ children }) {
     const location = useLocation()
 
     useEffect(() => {
-        
+        // removeToken()
         if (
             location.pathname !== '/login' &&
             location.pathname !== '/forgot-password' &&

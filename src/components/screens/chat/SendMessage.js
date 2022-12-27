@@ -3,19 +3,20 @@ import { useState } from "react";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { postMessage } from '../../../services/MessageService';
 
-function SendMessage() {
+function SendMessage({ updateChats }) {
 
     const [modalMessageVisible, setModalMessageVisible] = useState(false)
     const [message, setMessage] = useState('')
     const [recipientEmail, setRecipientEmail] = useState('');
 
     async function sendMessage() {
-        
+
         await postMessage(recipientEmail, message)
-       
+
         setModalMessageVisible(false)
         setMessage('')
         setRecipientEmail('')
+        updateChats()
 
     }
 

@@ -42,7 +42,6 @@ export default function Messages() {
 
     async function listChats(page) {
 
-       
         const authData = await getUserData()
         setAuthUser(authData)
 
@@ -51,6 +50,17 @@ export default function Messages() {
         if (page > 0)
             data.content = data.content.concat(chats.content)
 
+        let chatsList = await Promise.all(data.content.map(async chat => {
+
+            const userChat = chat.user1.email === authData.email ? chat.user2 : chat.user1
+            const lastMessage = await getMessagesUser(userChat.email, 0, 1)
+            chat['lastMessage'] = lastMessage.content[0].text
+
+            return chat
+
+        }));
+
+        data.content = chatsList
         setChats(data)
 
     }
@@ -156,6 +166,10 @@ export default function Messages() {
         }
     }
 
+    const updateChats = () => {
+        listChats(chats.number)
+    }
+
     return (
         <>
             <div className='buttonShowChatList'>
@@ -185,13 +199,16 @@ export default function Messages() {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <SendMessage />
+
+                    <SendMessage updateChats={updateChats} />
+
                     {chats && <ListChats
                         chats={chats}
                         authUser={authUser}
                         getChatByUser={getChatByUser}
                         listChats={listChats}
                     />}
+
                 </Modal.Body>
 
             </Modal>
@@ -213,7 +230,7 @@ export default function Messages() {
                                 return chatUser.email === msg.body.sender.email
                             })
 
-                            tempListChats.content[index].messages.push(msg.body)
+                            tempListChats.content[index].lastMessage = msg.body.text
 
                             setChats(tempListChats)
                         }
@@ -228,12 +245,12 @@ export default function Messages() {
                             }
 
                     }}
-                    debug={true}
+                    debug={false}
                 />
 
-                <div className='navLeft'>
+                <nav className='navLeft'>
 
-                    <SendMessage />
+                    <SendMessage updateChats={updateChats} />
 
                     {chats && <ListChats
                         chats={chats}
@@ -242,11 +259,9 @@ export default function Messages() {
                         listChats={listChats}
                     />}
 
-                </div>
+                </nav>
 
                 {asViewMessages()}
-
-
 
             </section>
         </>
