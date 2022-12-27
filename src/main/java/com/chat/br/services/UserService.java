@@ -83,10 +83,7 @@ public class UserService {
     public Boolean userRegister(UserModel userModel){
        try {
 
-           List<String> roleList = new ArrayList<>();
-           roleList.add("ROLE_ADMIN");
-           userModel.setRoles(roleList);
-
+           userModel.setRole("USER");
            userModel.setPassword(new BCryptPasswordEncoder().encode(userModel.getPassword()));
            userRepository.save(userModel);
 

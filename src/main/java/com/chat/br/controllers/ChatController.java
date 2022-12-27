@@ -36,32 +36,25 @@ import org.springframework.data.querydsl.QPageRequest;
 @SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Chat")
 public class ChatController {
-
     @Autowired
     private ChatService chatService;
-
     @Autowired
     SimpMessagingTemplate template;
-
-    
     @MessageMapping("/sendMessage")
     public void receiveMessage(@Payload MessageDto textMessageDTO) {
         // receive message from client
         System.out.println(textMessageDTO.getText());
     }
-
     @SendTo("/topic/message/{email}")
     public Message broadcastMessage(@Payload Message message, @PathVariable String email) {
         System.out.println(email);
         return message;
     }
-
     @Operation(summary = "List all authenticated user's chats")
     @GetMapping
     public ResponseEntity<Object> getChats(@PageableDefault(page = 0, size = 30, sort = "messages.sendDateMessage") Pageable paging){
         return chatService.getChats(paging);
     }
-
     @Operation(summary = "Send message to another user")
     @PostMapping
     public ResponseEntity<Object> sendingMessage(@RequestBody @Valid MessageDto messageDto){
@@ -70,7 +63,6 @@ public class ChatController {
         template.convertAndSend("/topic/message/"+messageDto.getEmailRecipient(), newMessage);
         return newMessage;
     }
-
     @Operation(summary = "Lists all messages sent by the authenticated user")
     @GetMapping("/sent")
     public ResponseEntity<Object> getSentMessages(@PageableDefault(page = 0) Pageable paging){ 	
@@ -87,7 +79,6 @@ public class ChatController {
         return chatService.getIncomingMessages(pageable);
 
     }
-
     @Operation(summary = "Get chat with another user")
     @GetMapping("/user/{recipient}")
     public ResponseEntity<Object> getDialogByRecipient(@PageableDefault(page = 0, size = 30, direction = Sort.Direction.DESC, sort = "sendDateMessage") Pageable paging, @PathVariable String recipient){

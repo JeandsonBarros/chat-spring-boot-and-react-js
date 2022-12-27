@@ -31,7 +31,11 @@ public class UserDetailsServiceImplement implements UserDetailsService {
                 ()-> new UsernameNotFoundException("User Not Found with username:" + username)
         );
 
-        return new User(userModel.getUsername(), userModel.getPassword(), true, true, true,true, userModel.getAuthorities());
+        Collection<GrantedAuthority> authoritiesT = new ArrayList<>();
+        SimpleGrantedAuthority authorityEx = new SimpleGrantedAuthority(userModel.getRole());
+        authoritiesT.add(authorityEx);
+
+        return new User(userModel.getEmail(), userModel.getPassword(), true, true, true,true, authoritiesT);
     }
 
 }

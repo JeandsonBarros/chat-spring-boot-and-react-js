@@ -1,6 +1,8 @@
 package com.chat.br.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,11 +20,15 @@ public class Chat implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "user_1_user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserModel user1;
+
     @ManyToOne
     @JoinColumn(name = "user_2_user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserModel user2;
-    @OneToMany
+
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
 
     public UUID getChatId() {

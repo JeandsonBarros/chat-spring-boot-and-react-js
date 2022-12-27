@@ -42,12 +42,12 @@ public class WebSecurityConfig{
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/forgot-password/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/auth/data").hasAnyRole("ADMIN", "USER")
-                .requestMatchers(HttpMethod.PUT, "/auth/update").hasAnyRole("ADMIN", "USER")
-                .requestMatchers(HttpMethod.DELETE, "/auth/delete").hasAnyRole("ADMIN", "USER")
-                .requestMatchers(HttpMethod.GET, "/auth/all-users").hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/auth/admin/delete/{email}").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/chat/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers(HttpMethod.GET, "/auth/data").hasAnyAuthority("ADMIN", "USER")
+                .requestMatchers(HttpMethod.PUT, "/auth/update").hasAnyAuthority("ADMIN", "USER")
+                .requestMatchers(HttpMethod.DELETE, "/auth/delete").hasAnyAuthority("ADMIN", "USER")
+                .requestMatchers(HttpMethod.GET, "/auth/all-users").hasAnyAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/auth/admin/delete/{email}").hasAnyAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/chat/**").hasAnyAuthority("ADMIN", "USER")
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
@@ -69,7 +69,7 @@ public class WebSecurityConfig{
                 "/swagger-ui/**",
                 "/api/**"
                 ,"/ws-message/**"
-                //,"/topic/message/**"
+                ,"/topic/message/**"
                 //,"/sendMessage/**"
         );
     }

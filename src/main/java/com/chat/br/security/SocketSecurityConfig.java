@@ -29,8 +29,8 @@ public class SocketSecurityConfig {
                         SimpMessageType.CONNECT_ACK,
                         SimpMessageType.UNSUBSCRIBE
                         ).permitAll()
-                .simpSubscribeDestMatchers("/ws-message/**").permitAll()
-                .simpSubscribeDestMatchers("/topic/message/**").permitAll()
+                .simpDestMatchers("/ws-message/**").permitAll()
+                .simpMessageDestMatchers("/topic/message/**").hasAnyRole("USER", "ADMIN")
                 .simpDestMatchers("/sendMessage/**").permitAll()
 
                 .anyMessage().authenticated();

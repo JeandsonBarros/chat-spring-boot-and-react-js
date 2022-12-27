@@ -36,7 +36,7 @@ public class UserController {
     		description = "User and admin login with email and password"
     		)
     @PostMapping("/login")
-    public ResponseEntity<String>  userDataTeste(@RequestBody @Valid LoginDto loginDto){
+    public ResponseEntity<String>  userLogin(@RequestBody @Valid LoginDto loginDto){
 
         var token = userService.userLogin(loginDto.getEmail(), loginDto.getPassword());
 

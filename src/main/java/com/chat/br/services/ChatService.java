@@ -47,35 +47,32 @@ public class ChatService {
             if(!recipient.isPresent())
                 return new ResponseEntity<>("Message recipient does not exist", HttpStatus.NOT_FOUND);
 
-            var message = new Message();
-            message.setText(messageDto.getText());
-            message.setSender(sender);
-            message.setRecipient(recipient.get());
-            message.setSendDateMessage(LocalDateTime.now());
-            message.setStatusMessage(StatusMessage.SENT);
-
-            var newMessage = messageRepository.save(message);
-
             var asChat1 = chatRepository.findByUser1AndUser2(sender, recipient.get());
             var asChat2 = chatRepository.findByUser1AndUser2(recipient.get(), sender);
             Chat chat;
 
             if(!asChat1.isPresent() && !asChat2.isPresent()){
                 chat = new Chat();
-                chat.setMessages(newMessage);
                 chat.setUser1(sender);
                 chat.setUser2(recipient.get());
 
             } else if (asChat1.isPresent()) {
                 chat = asChat1.get();
-                chat.setMessages(message);
-
             }else {
                 chat = asChat2.get();
-                chat.setMessages(message);
             }
 
-            chatRepository.save(chat);
+            var saveChat = chatRepository.save(chat);
+
+            var message = new Message();
+            message.setText(messageDto.getText());
+            message.setSender(sender);
+            message.setRecipient(recipient.get());
+            message.setSendDateMessage(LocalDateTime.now());
+            message.setChat(saveChat);
+            message.setStatusMessage(StatusMessage.SENT);
+            var newMessage = messageRepository.save(message);
+
             return new ResponseEntity<>(newMessage, HttpStatus.CREATED);
 
         }catch (Exception e){

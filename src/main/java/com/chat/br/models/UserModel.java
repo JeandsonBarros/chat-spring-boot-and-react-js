@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "TB_USER")
-public class UserModel implements UserDetails, Serializable {
+public class UserModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -27,11 +27,10 @@ public class UserModel implements UserDetails, Serializable {
     @JsonIgnore
     private String password;
     private String name;
-    private List<String> roles;
-    //https://www.baeldung.com/jpa-cascade-types
+    private String role;
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-    private List<Message> messages;
+    //@OneToMany//(cascade = CascadeType.ALL, orphanRemoval = true)
+    //private List<Message> messages;
 
     public UUID getUserId() {
         return userId;
@@ -49,7 +48,6 @@ public class UserModel implements UserDetails, Serializable {
         this.email = email;
     }
 
-    @Override
     public String getPassword() {
         return password;
     }
@@ -66,48 +64,19 @@ public class UserModel implements UserDetails, Serializable {
         this.name = name;
     }
 
-    public List<String> getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 
-    @Override
-    public Collection<GrantedAuthority> getAuthorities() {
-
-        Collection<GrantedAuthority> authoritiesT = new ArrayList<>();
-        this.roles.forEach(role->{
-            SimpleGrantedAuthority authorityEx = new SimpleGrantedAuthority(role);
-            authoritiesT.add(authorityEx);
-        });
-
-        return authoritiesT;
+   /* public List<Message> getMessages() {
+        return messages;
     }
 
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    } */
 }

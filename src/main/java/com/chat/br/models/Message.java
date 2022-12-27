@@ -2,6 +2,8 @@ package com.chat.br.models;
 
 import com.chat.br.enums.StatusMessage;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -20,10 +22,24 @@ public class Message implements Serializable {
     private String text;
     private StatusMessage statusMessage;
     private LocalDateTime sendDateMessage;
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserModel sender;
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserModel recipient;
+
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Chat chat;
+
+    public Chat getChat() {
+        return chat;
+    }
+
+    public void setChat(Chat chat) {
+        this.chat = chat;
+    }
 
     public UUID getMessageId() {
         return messageId;

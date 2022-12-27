@@ -12,12 +12,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-
+@Controller
 @SpringBootApplication//(exclude = SecurityAutoConfiguration.class)
 public class ChatApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ChatApplication.class, args);
+	}
+
+	@GetMapping("/")
+	public String index(){
+		return "redirect:/swagger-ui/index.html";
 	}
 
 }

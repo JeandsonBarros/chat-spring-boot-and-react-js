@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -48,7 +49,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
             UserModel user = optionalUser.get();
 
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            Collection<GrantedAuthority> authorities = new ArrayList<>();
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
+            authorities.add(authority);
+
+            var userDetails = new User(user.getEmail(), user.getPassword(), true, true, true,true, authorities);
+
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         }
     }
